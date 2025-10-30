@@ -1,66 +1,95 @@
-import React, { useState, useEffect, useRef } from 'react';
-import type { Message, User } from '../types';
-import { MOCK_CONVERSATIONS } from '../constants';
+import React, { useState, useRef, useEffect } from 'react';
+import { User, ChatMessage as ChatMessageType } from '../types';
+import { MOCK_CHAT_HISTORY } from '../constants';
 import { SendIcon } from './icons';
 
 interface ChatScreenProps {
   user: User;
 }
 
+const ChatMessage: React.FC<{ message: ChatMessageType, user: User }> = ({ message, user }) => {
+  const isMe = message.senderId === 'me';
+  return (
+    <div className={`flex items-end mb-4 ${isMe ? 'justify-end' : 'justify-start'}`}>
+      {!isMe && (
+        <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full mr-3" />
+      )}
+      <div 
+        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+          isMe 
+            ? 'bg-sky-500 text-white rounded-br-none' 
+            : 'bg-gray-200 text-gray-800 rounded-bl-none'
+        }`}
+      >
+        <p>{message.text}</p>
+        <p className={`text-xs mt-1 ${isMe ? 'text-sky-100' : 'text-gray-500'} text-right`}>
+          {message.timestamp}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 export const ChatScreen: React.FC<ChatScreenProps> = ({ user }) => {
-  const initialConversation = MOCK_CONVERSATIONS.find(c => c.user.id === user.id);
-  const [messages, setMessages] = useState<Message[]>(initialConversation?.messages || []);
-  const [newMessage, setNewMessage] = useState('');
+  const [messages, setMessages] = useState<ChatMessageType[]>(MOCK_CHAT_HISTORY[user.id] || []);
+  const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(scrollToBottom, [messages]);
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() === '') return;
+    if (inputText.trim()) {
+      const newMessage: ChatMessageType = {
+        id: `msg-${Date.now()}`,
+        text: inputText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        senderId: 'me',
+      };
+      setMessages([...messages, newMessage]);
+      setInputText('');
 
-    const message: Message = {
-      id: Date.now().toString(),
-      text: newMessage,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase(),
-      isSender: true,
-    };
-
-    setMessages([...messages, message]);
-    setNewMessage('');
+      // Simulate a reply
+      setTimeout(() => {
+        const replyMessage: ChatMessageType = {
+          id: `msg-${Date.now() + 1}`,
+          text: 'Sounds good!',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          senderId: user.id,
+        };
+        setMessages(prev => [...prev, replyMessage]);
+      }, 1000);
+    }
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-100">
-      <div className="flex-grow p-4 space-y-4 overflow-y-auto">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.isSender ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${msg.isSender ? 'bg-green-200 rounded-br-none' : 'bg-white rounded-bl-none shadow-sm'}`}>
-              <p className="text-sm text-gray-800">{msg.text}</p>
-              <p className={`text-xs mt-1 ${msg.isSender ? 'text-right text-green-700' : 'text-left text-gray-400'}`}>
-                {msg.timestamp}
-              </p>
-            </div>
-          </div>
+    <div className="flex flex-col h-full bg-gray-50">
+      <div className="flex-grow p-4 overflow-y-auto">
+        {messages.map(msg => (
+          <ChatMessage key={msg.id} message={msg} user={user} />
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSendMessage} className="bg-white p-2 flex items-center border-t border-gray-200">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Enter message"
-          className="flex-grow bg-gray-100 rounded-full py-2 px-4 focus:outline-none"
-        />
-        <button type="submit" className="ml-2 text-sky-500 p-2 rounded-full hover:bg-sky-100">
-          <SendIcon className="w-6 h-6" />
-        </button>
-      </form>
+      <div className="p-4 bg-white border-t border-gray-200">
+        <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-grow bg-gray-100 rounded-full py-2 px-4 focus:outline-none"
+          />
+          <button type="submit" className="bg-sky-500 text-white p-2 rounded-full shadow-md hover:bg-sky-600 transition-colors disabled:bg-gray-300" disabled={!inputText.trim()}>
+            <SendIcon className="w-6 h-6" />
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

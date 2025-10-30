@@ -1,42 +1,34 @@
-import { HistoryItem, Conversation, Message, User } from './types';
+import { User, HistoryItem, Message, ChatMessage } from './types';
 
-const users: { [key: string]: User } = {
-  s: { id: 's', name: 'S•', avatar: 'https://i.pravatar.cc/150?u=s' },
-  irf: { id: 'irf', name: 'Irf••', avatar: 'https://i.pravatar.cc/150?u=irf' },
-  aj: { id: 'aj', name: 'Aj••', avatar: 'https://i.pravatar.cc/150?u=aj' },
-  anas: { id: 'anas', name: 'Anas••••', avatar: 'https://i.pravatar.cc/150?u=anas' },
-  yo: { id: 'yo', name: 'Yo••', avatar: 'https://i.pravatar.cc/150?u=yo' },
-  esh: { id: 'esh', name: 'Esh••', avatar: 'https://i.pravatar.cc/150?u=esh' },
-  jab: { id: 'jab', name: 'Jab••', avatar: 'https://i.pravatar.cc/150?u=jab' },
-  saja: { id: 'saja', name: 'Saja•••', avatar: 'https://i.pravatar.cc/150?u=saja' },
-  me: { id: 'me', name: 'You', avatar: 'https://i.pravatar.cc/150?u=me' },
-};
+export const MOCK_USERS: User[] = [
+  { id: '1', name: 'Alice', avatar: 'https://i.pravatar.cc/150?u=alice', age: 25, location: 'New York, USA' },
+  { id: '2', name: 'Bob', avatar: 'https://i.pravatar.cc/150?u=bob', age: 28, location: 'London, UK' },
+  { id: '3', name: 'Charlie', avatar: 'https://i.pravatar.cc/150?u=charlie', age: 22, location: 'Paris, France' },
+  { id: '4', name: 'Diana', avatar: 'https://i.pravatar.cc/150?u=diana', age: 30, location: 'Tokyo, Japan' },
+];
 
 export const MOCK_HISTORY: HistoryItem[] = [
-  { id: '1', user: users.s, location: 'delhi, IN', duration: '9 seconds', timestamp: '11:45:26, 16 Oct', isFriend: false },
-  { id: '2', user: users.irf, location: 'patna, IN', duration: '22 seconds', timestamp: '11:44:48, 16 Oct', isFriend: false },
-  { id: '3', user: users.aj, location: 'delhi, IN', duration: '12 seconds', timestamp: '11:44:12, 16 Oct', isFriend: true },
-  { id: '4', user: users.anas, location: 'aligarh, IN', duration: '17 seconds', timestamp: '11:43:42, 16 Oct', isFriend: false },
-  { id: '5', user: users.yo, location: 'mumbai, IN', duration: '31 seconds', timestamp: '11:42:01, 16 Oct', isFriend: false },
+  { id: 'h1', user: MOCK_USERS[0], location: 'New York, USA', duration: '5:23', timestamp: '2 days ago', isFriend: false },
+  { id: 'h2', user: MOCK_USERS[1], location: 'London, UK', duration: '12:01', timestamp: '3 days ago', isFriend: true },
+  { id: 'h3', user: MOCK_USERS[2], location: 'Paris, France', duration: '8:45', timestamp: '5 days ago', isFriend: false },
 ];
 
-const ajChatMessages: Message[] = [
-    { id: 'c1', text: 'hey, how are you?', timestamp: '7:35 pm', isSender: true },
-    { id: 'c2', text: 'very well. thank you.', timestamp: '7:37 pm', isSender: false },
-    { id: 'c3', text: 'How about yourself?', timestamp: '7:37 pm', isSender: false },
-    { id: 'c4', text: 'oh gosh. all kind of stuff!', timestamp: '7:39 pm', isSender: true },
-    { id: 'c5', text: 'no worries. let\'s have dinner together if you get some time from work', timestamp: '7:47 pm', isSender: false },
-    { id: 'c6', text: 'yeah, sure. let\'s meet in 30min.', timestamp: '7:47 pm', isSender: true },
-    { id: 'c7', text: 'okay 👍', timestamp: '7:48 pm', isSender: false },
+export const MOCK_MESSAGES: Message[] = [
+  { id: 'm1', user: MOCK_USERS[0], lastMessage: 'Hey, how are you?', timestamp: '10:30 AM', unreadCount: 2 },
+  { id: 'm2', user: MOCK_USERS[1], lastMessage: 'See you later!', timestamp: 'Yesterday' },
+  { id: 'm3', user: MOCK_USERS[2], lastMessage: 'That was fun!', timestamp: '3 days ago' },
 ];
 
-
-export const MOCK_CONVERSATIONS: Conversation[] = [
-  { id: 'c1', user: users.aj, lastMessage: "okay 👍", timestamp: '11:50 AM', messages: ajChatMessages },
-  { id: 'c2', user: users.irf, lastMessage: 'add me', timestamp: '11:45 AM', messages: [{ id: 'm1', text: 'add me', timestamp: '11:45 AM', isSender: false }] },
-  { id: 'c3', user: users.s, lastMessage: 'nice to meet you.', timestamp: '11:44 AM', messages: [{ id: 'm2', text: 'nice to meet you.', timestamp: '11:44 AM', isSender: false }] },
-  { id: 'c4', user: users.yo, lastMessage: 'your name', timestamp: '11:43 AM', messages: [{ id: 'm3', text: 'your name', timestamp: '11:43 AM', isSender: false }] },
-  { id: 'c5', user: users.esh, lastMessage: 'lets meet', timestamp: '11:42 AM', messages: [{ id: 'm4', text: 'lets meet', timestamp: '11:42 AM', isSender: false }] },
-  { id: 'c6', user: users.jab, lastMessage: 'how are you friend?', timestamp: '11:41 AM', messages: [{ id: 'm5', text: 'how are you friend?', timestamp: '11:41 AM', isSender: false }] },
-  { id: 'c7', user: users.saja, lastMessage: 'hi', timestamp: '11:41 AM', messages: [{ id: 'm6', text: 'hi', timestamp: '11:41 AM', isSender: false }] },
-];
+export const MOCK_CHAT_HISTORY: { [key: string]: ChatMessage[] } = {
+  '1': [
+    { id: 'c1-1', text: 'Hey, how are you?', timestamp: '10:30 AM', senderId: '1' },
+    { id: 'c1-2', text: 'I am good, thanks! How about you?', timestamp: '10:31 AM', senderId: 'me' },
+    { id: 'c1-3', text: 'Doing great!', timestamp: '10:32 AM', senderId: '1' },
+  ],
+  '2': [
+    { id: 'c2-1', text: 'See you later!', timestamp: 'Yesterday', senderId: '2' },
+  ],
+  '3': [
+    { id: 'c3-1', text: 'That was fun!', timestamp: '3 days ago', senderId: '3' },
+  ],
+};

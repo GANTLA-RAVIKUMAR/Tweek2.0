@@ -1,16 +1,20 @@
 export enum Screen {
   Login = 'Login',
-  Main = 'Tweek',
+  Main = 'Main',
   History = 'History',
   Messages = 'Messages',
   Chat = 'Chat',
   Coins = 'Coins',
+  Searching = 'Searching',
+  VideoCall = 'VideoCall',
 }
 
 export interface User {
   id: string;
   name: string;
   avatar: string;
+  age: number;
+  location: string;
 }
 
 export interface HistoryItem {
@@ -24,15 +28,15 @@ export interface HistoryItem {
 
 export interface Message {
   id: string;
-  text: string;
-  timestamp: string;
-  isSender: boolean;
-}
-
-export interface Conversation {
-  id: string;
   user: User;
   lastMessage: string;
   timestamp: string;
-  messages: Message[];
+  unreadCount?: number;
+}
+
+export interface ChatMessage {
+    id: string;
+    text: string;
+    timestamp: string;
+    senderId: 'me' | string;
 }

@@ -1,16 +1,31 @@
-import React from 'react';
-// Fix: Import User type from '../types' instead of './icons'.
+import React, { useState, useEffect, useRef } from 'react';
 import { Screen, User } from '../types';
-import { CoinIcon, UserPlusIcon, MoreVerticalIcon, ArrowLeftIcon } from './icons';
+import { CoinIcon, UserPlusIcon, MoreVerticalIcon, ArrowLeftIcon, VideoCameraIcon } from './icons';
 
 interface HeaderProps {
   screen: Screen;
   setScreen: (screen: Screen) => void;
   coins: number;
   chatUser?: User;
+  onStartCall: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ screen, setScreen, coins, chatUser }) => {
+export const Header: React.FC<HeaderProps> = ({ screen, setScreen, coins, chatUser, onStartCall }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const renderHeaderContent = () => {
     switch (screen) {
       case Screen.Chat:
@@ -23,9 +38,25 @@ export const Header: React.FC<HeaderProps> = ({ screen, setScreen, coins, chatUs
               <img src={chatUser?.avatar} alt={chatUser?.name} className="w-8 h-8 rounded-full ml-2" />
               <span className="ml-3 font-semibold text-gray-800">{chatUser?.name}</span>
             </div>
-            <button className="p-2 -mr-2 text-gray-600">
-              <MoreVerticalIcon className="w-6 h-6" />
-            </button>
+            <div className="relative" ref={menuRef}>
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 -mr-2 text-gray-600">
+                <MoreVerticalIcon className="w-6 h-6" />
+              </button>
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                  <button
+                    onClick={() => {
+                      onStartCall();
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <VideoCameraIcon className="w-5 h-5 mr-3" />
+                    Video Call
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         );
       case Screen.Coins:
